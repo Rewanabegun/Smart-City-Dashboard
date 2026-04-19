@@ -13,25 +13,24 @@ const Dashboard = () => {
   const [pollution, setPollution] = useState([]);
 
   useEffect(() => {
-    // TRAFFIC SOCKET
+    // 🚦 TRAFFIC REALTIME SOCKET
     socket.on("trafficUpdate", (data) => {
       const formatted = {
-        time: Date.now(), // ✅ FIXED (important)
-        density: data.density || Math.floor(Math.random() * 100),
+        time: Date.now(),
+        density: data?.density ?? Math.floor(Math.random() * 100),
       };
 
       setTraffic((prev) => [...prev.slice(-20), formatted]);
     });
 
-    // POLLUTION SIMULATION
+    // 🌫️ POLLUTION SIMULATION (FIXED)
     const interval = setInterval(() => {
-      const p = {
-        time: Date.now(), // ✅ FIXED
-        density: Math.floor(Math.random() * 100), // safe fallback
+      const pollutionData = {
+        time: Date.now(),
         aqi: Math.floor(Math.random() * 300),
       };
 
-      setPollution((prev) => [...prev.slice(-20), p]);
+      setPollution((prev) => [...prev.slice(-20), pollutionData]);
     }, 3000);
 
     return () => {
@@ -40,6 +39,7 @@ const Dashboard = () => {
     };
   }, []);
 
+  // 📊 LIVE VALUES
   const latestTraffic = traffic.slice(-1)[0]?.density || 0;
   const latestAQI = pollution.slice(-1)[0]?.aqi || 0;
 
@@ -48,7 +48,7 @@ const Dashboard = () => {
 
       <h1 className="title">Vijayawada Smart City Dashboard</h1>
 
-      {/* STATS */}
+      {/* 📌 STATS CARDS */}
       <div className="grid grid-3">
 
         <div className="card">
@@ -70,7 +70,7 @@ const Dashboard = () => {
 
       </div>
 
-      {/* CHARTS */}
+      {/* 📊 CHARTS */}
       <div className="grid grid-2" style={{ marginTop: "30px" }}>
 
         <div className="card">
@@ -85,13 +85,13 @@ const Dashboard = () => {
 
       </div>
 
-      {/* MAP */}
+      {/* 🗺️ MAP */}
       <div className="card" style={{ marginTop: "30px" }}>
         <div className="subtitle">City Map</div>
         <MapView traffic={traffic} />
       </div>
 
-      {/* EVENTS */}
+      {/* 📢 EVENTS */}
       <div className="card" style={{ marginTop: "30px" }}>
         <EventsList />
       </div>
