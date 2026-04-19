@@ -9,31 +9,35 @@ const TrafficChart = ({ data }) => {
 
         {/* ✅ FORMAT REAL TIME HERE */}
         <XAxis
-          dataKey="time"
-          stroke="#ccc"
-          tickFormatter={(time) =>
-            time
-              ? new Date(time).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit"
-                })
-              : ""
-          }
-        />
+  dataKey="time"
+  stroke="#ccc"
+  tickFormatter={(time) => {
+    const date = new Date(time);
+
+    if (isNaN(date.getTime())) return "";
+
+    return date.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  }}
+/>
 
         <YAxis stroke="#ccc" />
 
         <Tooltip
-          labelFormatter={(time) =>
-            time
-              ? new Date(time).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  second: "2-digit"
-                })
-              : ""
-          }
-        />
+  labelFormatter={(time) => {
+    const date = new Date(time);
+
+    if (isNaN(date.getTime())) return "";
+
+    return date.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit"
+    });
+  }}
+/>
 
         <Line type="monotone" dataKey="density" stroke="#22c55e" />
 
