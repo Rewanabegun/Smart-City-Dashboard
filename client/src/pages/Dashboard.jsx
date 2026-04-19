@@ -80,7 +80,7 @@ const Dashboard = () => {
         {/* MAP */}
         <div className="card" style={{ marginTop: "30px" }}>
           <div className="subtitle">City Map</div>
-          <MapView />
+          <MapView traffic={traffic} />
         </div>
 
         {/* EVENTS */}

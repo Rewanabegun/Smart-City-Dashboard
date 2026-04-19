@@ -27,61 +27,64 @@ const getIcon = (density) => {
   return greenIcon;
 };
 
+// Initial fallback data
 const initialLocations = [
   { name: "Benz Circle", coords: [16.5062, 80.6480], density: 40 },
   { name: "MG Road", coords: [16.5150, 80.6300], density: 30 },
   { name: "Bus Stand", coords: [16.5200, 80.6200], density: 20 }
 ];
 
-const MapView = () => {
+const MapView = ({ traffic }) => {
   const [locations, setLocations] = useState(initialLocations);
   const [notifications, setNotifications] = useState([]);
 
-  // Real-time update
+  // 🔴 MAIN FIX: use real socket updates
   useEffect(() => {
-    socket.on("trafficUpdate", () => {
+    socket.on("trafficUpdate", (data) => {
+      // Expecting: { name, density }
       setLocations((prev) =>
-        prev.map((loc) => ({
-          ...loc,
-          density: Math.floor(Math.random() * 100)
-        }))
+        prev.map((loc) =>
+          loc.name === data.name
+            ? { ...loc, density: data.density }
+            : loc
+        )
       );
     });
 
     return () => socket.off("trafficUpdate");
   }, []);
 
-  // Notification system
+  // 🔔 Notification system (FIXED)
   useEffect(() => {
-  setNotifications((prev) => {
-    let updated = [...prev];
+    setNotifications((prev) => {
+      let updated = [...prev];
 
-    locations.forEach((loc) => {
-      const exists = updated.find((n) => n.name === loc.name);
+      locations.forEach((loc) => {
+        const exists = updated.find((n) => n.name === loc.name);
 
-      // 🔴 ADD notification if high traffic
-      if (loc.density > 80 && !exists) {
-        updated.push({
-          id: Date.now(),
-          name: loc.name,
-          message: `🚨 High Traffic at ${loc.name} (${loc.density}%)`
-        });
-      }
+        // 🚨 Add alert for heavy traffic
+        if (loc.density > 80 && !exists) {
+          updated.push({
+            id: Date.now() + Math.random(),
+            name: loc.name,
+            message: `🚨 Heavy Traffic at ${loc.name} (${loc.density}%)`
+          });
+        }
 
-      // 🟢 REMOVE notification if traffic normal
-      if (loc.density <= 80 && exists) {
-        updated = updated.filter((n) => n.name !== loc.name);
-      }
+        // ✅ Remove alert if traffic normal
+        if (loc.density <= 80 && exists) {
+          updated = updated.filter((n) => n.name !== loc.name);
+        }
+      });
+
+      return updated;
     });
-
-    return updated;
-  });
-}, [locations]);
+  }, [locations]);
 
   return (
     <div style={{ position: "relative" }}>
 
-      {/* 🔔 NOTIFICATION UI */}
+      {/* 🔔 Notifications */}
       <div className="notification-container">
         {notifications.map((n) => (
           <div key={n.id} className="notification">
@@ -90,6 +93,7 @@ const MapView = () => {
         ))}
       </div>
 
+      {/* 🗺️ MAP */}
       <MapContainer
         center={[16.5062, 80.6480]}
         zoom={13}
@@ -110,7 +114,12 @@ const MapView = () => {
             <Popup>
               <strong>{loc.name}</strong><br />
               🚦 Traffic: {loc.density}% <br />
-              Status: {loc.density > 80 ? "Heavy 🚨" : loc.density > 50 ? "Moderate ⚠️" : "Smooth ✅"}<br />
+              Status:{" "}
+              {loc.density > 80
+                ? "Heavy 🚨"
+                : loc.density > 50
+                ? "Moderate ⚠️"
+                : "Smooth ✅"}<br />
               🕒 {new Date().toLocaleTimeString()}
             </Popup>
 
@@ -130,7 +139,6 @@ const MapView = () => {
           </Marker>
         ))}
       </MapContainer>
-
     </div>
   );
 };
