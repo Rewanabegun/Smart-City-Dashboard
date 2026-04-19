@@ -3,10 +3,9 @@ import { useEffect, useState } from "react";
 import io from "socket.io-client";
 import L from "leaflet";
 
-// 🔌 SOCKET CONNECTION
 const socket = io("http://localhost:5001");
 
-// 🎯 ICONS
+// Icons
 const redIcon = new L.Icon({
   iconUrl: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
   iconSize: [30, 30]
@@ -22,14 +21,12 @@ const greenIcon = new L.Icon({
   iconSize: [30, 30]
 });
 
-// 🎯 ICON BASED ON DENSITY
 const getIcon = (density) => {
   if (density > 80) return redIcon;
   if (density > 50) return yellowIcon;
   return greenIcon;
 };
 
-// 📍 INITIAL LOCATIONS (VIJAYAWADA)
 const initialLocations = [
   { name: "Benz Circle", coords: [16.5062, 80.6480], density: 40 },
   { name: "MG Road", coords: [16.5150, 80.6300], density: 30 },
@@ -38,16 +35,15 @@ const initialLocations = [
 
 const MapView = () => {
   const [locations, setLocations] = useState(initialLocations);
+  const [notifications, setNotifications] = useState([]);
 
-  // 🔄 REAL-TIME UPDATE FROM SOCKET
+  // Real-time update
   useEffect(() => {
-    socket.on("trafficUpdate", (data) => {
-      console.log("Map received:", data);
-
+    socket.on("trafficUpdate", () => {
       setLocations((prev) =>
         prev.map((loc) => ({
           ...loc,
-          density: Math.floor(Math.random() * 100) // simulate per location
+          density: Math.floor(Math.random() * 100)
         }))
       );
     });
@@ -55,61 +51,87 @@ const MapView = () => {
     return () => socket.off("trafficUpdate");
   }, []);
 
-  // 🚨 ALERT SYSTEM
+  // Notification system
   useEffect(() => {
+  setNotifications((prev) => {
+    let updated = [...prev];
+
     locations.forEach((loc) => {
-      if (loc.density > 80) {
-        alert(`🚨 High Traffic at ${loc.name}: ${loc.density}%`);
+      const exists = updated.find((n) => n.name === loc.name);
+
+      // 🔴 ADD notification if high traffic
+      if (loc.density > 80 && !exists) {
+        updated.push({
+          id: Date.now(),
+          name: loc.name,
+          message: `🚨 High Traffic at ${loc.name} (${loc.density}%)`
+        });
+      }
+
+      // 🟢 REMOVE notification if traffic normal
+      if (loc.density <= 80 && exists) {
+        updated = updated.filter((n) => n.name !== loc.name);
       }
     });
-  }, [locations]);
+
+    return updated;
+  });
+}, [locations]);
 
   return (
-    <MapContainer
-      center={[16.5062, 80.6480]}
-      zoom={13}
-      style={{ height: "400px", borderRadius: "12px" }}
-    >
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+    <div style={{ position: "relative" }}>
 
-      {locations.map((loc, index) => (
-        <Marker
-          key={index}
-          position={loc.coords}
-          icon={getIcon(loc.density)}
+      {/* 🔔 NOTIFICATION UI */}
+      <div className="notification-container">
+        {notifications.map((n) => (
+          <div key={n.id} className="notification">
+            {n.message}
+          </div>
+        ))}
+      </div>
 
-          // 🖱️ HOVER POPUP
-          eventHandlers={{
-            mouseover: (e) => e.target.openPopup(),
-            mouseout: (e) => e.target.closePopup()
-          }}
-        >
-          <Popup>
-            <strong>{loc.name}</strong><br />
-            🚦 Traffic: {loc.density}% <br />
-            Status: {loc.density > 80 ? "Heavy 🚨" : loc.density > 50 ? "Moderate ⚠️" : "Smooth ✅"}<br />
-            🕒 Time: {new Date().toLocaleTimeString()}
-          </Popup>
+      <MapContainer
+        center={[16.5062, 80.6480]}
+        zoom={13}
+        style={{ height: "400px", borderRadius: "12px" }}
+      >
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-          {/* 🔵 AREA HIGHLIGHT */}
-          <Circle
-            center={loc.coords}
-            radius={300}
-            pathOptions={{
-              color:
-                loc.density > 80
-                  ? "red"
-                  : loc.density > 50
-                  ? "yellow"
-                  : "green",
-              fillOpacity: 0.2
+        {locations.map((loc, index) => (
+          <Marker
+            key={index}
+            position={loc.coords}
+            icon={getIcon(loc.density)}
+            eventHandlers={{
+              mouseover: (e) => e.target.openPopup(),
+              mouseout: (e) => e.target.closePopup()
             }}
-          />
-        </Marker>
-      ))}
-    </MapContainer>
+          >
+            <Popup>
+              <strong>{loc.name}</strong><br />
+              🚦 Traffic: {loc.density}% <br />
+              Status: {loc.density > 80 ? "Heavy 🚨" : loc.density > 50 ? "Moderate ⚠️" : "Smooth ✅"}<br />
+              🕒 {new Date().toLocaleTimeString()}
+            </Popup>
+
+            <Circle
+              center={loc.coords}
+              radius={300}
+              pathOptions={{
+                color:
+                  loc.density > 80
+                    ? "red"
+                    : loc.density > 50
+                    ? "yellow"
+                    : "green",
+                fillOpacity: 0.2
+              }}
+            />
+          </Marker>
+        ))}
+      </MapContainer>
+
+    </div>
   );
 };
 
