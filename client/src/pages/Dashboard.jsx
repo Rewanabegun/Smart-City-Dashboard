@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import io from "socket.io-client";
 
-import Navbar from "../components/Navbar";
 import TrafficChart from "../components/TrafficChart";
 import PollutionChart from "../components/PollutionChart";
 import MapView from "../components/MapView";
