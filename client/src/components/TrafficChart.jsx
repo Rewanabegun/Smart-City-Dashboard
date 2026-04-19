@@ -7,25 +7,36 @@ const TrafficChart = ({ data }) => {
     <ResponsiveContainer width="100%" height={250}>
       <LineChart data={data}>
 
+        {/* ✅ FORMAT REAL TIME HERE */}
         <XAxis
           dataKey="time"
           stroke="#ccc"
           tickFormatter={(time) =>
-            new Date(time).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit"
-            })
+            time
+              ? new Date(time).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit"
+                })
+              : ""
           }
         />
 
         <YAxis stroke="#ccc" />
+
         <Tooltip
           labelFormatter={(time) =>
-            new Date(time).toLocaleTimeString()
+            time
+              ? new Date(time).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit"
+                })
+              : ""
           }
         />
 
         <Line type="monotone" dataKey="density" stroke="#22c55e" />
+
       </LineChart>
     </ResponsiveContainer>
   );
