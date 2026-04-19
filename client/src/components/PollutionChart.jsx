@@ -12,7 +12,7 @@ const PollutionChart = ({ data }) => {
     <ResponsiveContainer width="100%" height={250}>
       <LineChart data={data}>
 
-        {/* X AXIS (TIME FIXED) */}
+        {/* X AXIS (TIME) */}
         <XAxis
           dataKey="time"
           stroke="#ccc"
@@ -27,7 +27,7 @@ const PollutionChart = ({ data }) => {
           }}
         />
 
-        {/* Y AXIS */}
+        {/* Y AXIS (AQI SCALE) */}
         <YAxis stroke="#ccc" />
 
         {/* TOOLTIP */}
@@ -44,13 +44,14 @@ const PollutionChart = ({ data }) => {
           }}
         />
 
-        {/* AQI LINE */}
+        {/* 🔥 THIS IS THE FIX (IMPORTANT PART) */}
         <Line
           type="monotone"
           dataKey="aqi"
           stroke="#ef4444"
-          strokeWidth={2}
-          dot={false}
+          strokeWidth={3}
+          dot={{ r: 4 }}        // ✅ SHOW POINTS (bubbles)
+          activeDot={{ r: 6 }}  // ✅ HOVER EFFECT
         />
 
       </LineChart>
