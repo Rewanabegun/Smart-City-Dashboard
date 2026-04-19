@@ -11,21 +11,23 @@ const TrafficChart = ({ data }) => {
           dataKey="time"
           stroke="#ccc"
           tickFormatter={(time) =>
-            new Date(time).toLocaleTimeString([], {
+            time ? new Date(time).toLocaleTimeString([], {
               hour: "2-digit",
               minute: "2-digit"
-            })
+            }) : ""
           }
         />
 
         <YAxis stroke="#ccc" />
+
         <Tooltip
           labelFormatter={(time) =>
-            new Date(time).toLocaleTimeString()
+            time ? new Date(time).toLocaleTimeString() : ""
           }
         />
 
         <Line type="monotone" dataKey="density" stroke="#22c55e" />
+
       </LineChart>
     </ResponsiveContainer>
   );
