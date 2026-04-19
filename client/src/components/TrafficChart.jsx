@@ -6,9 +6,25 @@ const TrafficChart = ({ data }) => {
   return (
     <ResponsiveContainer width="100%" height={250}>
       <LineChart data={data}>
-        <XAxis dataKey="time" stroke="#ccc" />
+
+        <XAxis
+          dataKey="time"
+          stroke="#ccc"
+          tickFormatter={(time) =>
+            new Date(time).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit"
+            })
+          }
+        />
+
         <YAxis stroke="#ccc" />
-        <Tooltip />
+        <Tooltip
+          labelFormatter={(time) =>
+            new Date(time).toLocaleTimeString()
+          }
+        />
+
         <Line type="monotone" dataKey="density" stroke="#22c55e" />
       </LineChart>
     </ResponsiveContainer>
