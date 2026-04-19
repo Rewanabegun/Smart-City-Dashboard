@@ -7,7 +7,7 @@ import PollutionChart from "../components/PollutionChart";
 import MapView from "../components/MapView";
 import EventsList from "../components/EventsList";
 
-const socket = io("http://localhost:5001");
+const socket = io("https://smart-city-dashboard-e2bi.onrender.com");
 
 const Dashboard = () => {
   const [traffic, setTraffic] = useState([]);
