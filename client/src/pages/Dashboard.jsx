@@ -34,6 +34,8 @@ const Dashboard = () => {
 
   return (
     <>
+    <Navbar />
+  <div className="container"></div>
       
 
       <div className="container">
