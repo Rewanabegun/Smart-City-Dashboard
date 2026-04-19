@@ -7,26 +7,17 @@ const TrafficChart = ({ data }) => {
     <ResponsiveContainer width="100%" height={250}>
       <LineChart data={data}>
 
-        <XAxis
-          dataKey="time"
-          stroke="#ccc"
-          tickFormatter={(time) =>
-            time ? new Date(time).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit"
-            }) : ""
-          }
-        />
-
+        {/* ✅ SAME STYLE AS POLLUTION CHART */}
+        <XAxis dataKey="time" stroke="#ccc" />
         <YAxis stroke="#ccc" />
 
-        <Tooltip
-          labelFormatter={(time) =>
-            time ? new Date(time).toLocaleTimeString() : ""
-          }
-        />
+        <Tooltip />
 
-        <Line type="monotone" dataKey="density" stroke="#22c55e" />
+        <Line
+          type="monotone"
+          dataKey="density"
+          stroke="#22c55e"
+        />
 
       </LineChart>
     </ResponsiveContainer>
