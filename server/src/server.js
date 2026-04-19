@@ -42,8 +42,10 @@ io.on("connection", (socket) => {
       density: Math.floor(Math.random() * 100)
     };
 
-    socket.emit("trafficUpdate", liveData);
-  }, 3000);
+   socket.emit("trafficUpdate", {
+  name: "MG Road",
+  density: 90
+});
 
   socket.on("disconnect", () => {
     console.log("User Disconnected:", socket.id);
