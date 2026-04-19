@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import io from "socket.io-client";
 import L from "leaflet";
 
-const socket = io("http://localhost:5001");
+const socket = io("https://smart-city-dashboard-e2bi.onrender.com");
 
 // Icons
 const redIcon = new L.Icon({
