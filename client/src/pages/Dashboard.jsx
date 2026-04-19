@@ -19,7 +19,8 @@ const Dashboard = () => {
 
     setInterval(() => {
       const p = {
-        time: new Date().toLocaleTimeString(),
+        time: new Date().toISOString(),
+    density: randomDensity,
         aqi: Math.floor(Math.random() * 300),
       };
       setPollution((prev) => [...prev.slice(-20), p]);
