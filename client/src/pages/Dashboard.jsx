@@ -28,7 +28,7 @@ const Dashboard = () => {
 
     return () => socket.off("trafficUpdate");
   }, []);
-
+ 
   const latestTraffic = traffic.slice(-1)[0]?.density || 0;
   const latestAQI = pollution.slice(-1)[0]?.aqi || 0;
 
