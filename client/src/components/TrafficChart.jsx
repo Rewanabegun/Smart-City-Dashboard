@@ -8,35 +8,29 @@ const TrafficChart = ({ data }) => {
       <LineChart data={data}>
 
         {/* ✅ FORMAT REAL TIME HERE */}
-        <XAxis
-  dataKey="time"
-  stroke="#ccc"
-  tickFormatter={(time) => {
-    const date = new Date(time);
+        tickFormatter={(time) => {
+  const date = new Date(Number(time));
+  if (isNaN(date.getTime())) return "";
 
-    if (isNaN(date.getTime())) return "";
-
-    return date.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit"
-    });
-  }}
-/>
+  return date.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}}
 
         <YAxis stroke="#ccc" />
 
         <Tooltip
   labelFormatter={(time) => {
-    const date = new Date(time);
+  const date = new Date(Number(time));
+  if (isNaN(date.getTime())) return "";
 
-    if (isNaN(date.getTime())) return "";
-
-    return date.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit"
-    });
-  }}
+  return date.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
+  });
+}}
 />
 
         <Line type="monotone" dataKey="density" stroke="#22c55e" />
